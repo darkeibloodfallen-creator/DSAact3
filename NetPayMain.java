@@ -120,10 +120,8 @@ public class NetPayMain {
                             IncomeTax = 200833.33 + (TaxedMonthlyRate - 666667) * 0.35;
                         }
 
-//                        System.out.print("Absence deduction (no. of days absent): ");
                         int AbsentInput = readNonNegativeInt(scanner, "Absence deduction (no. of days absent): ");
                         double AbsenceDeduction = DailyRate * AbsentInput;
-//                        System.out.print("Late deduction (no. of hours late): "); //follows the "no work, no pay" rule
                         int LateInput = readNonNegativeInt(scanner, "Late deduction (no. of hours late): ");
                         double LateDeduction = HourlyRate * LateInput;
 
@@ -151,8 +149,9 @@ public class NetPayMain {
                         System.out.println("\n—————————————————————————");
                         System.out.printf("Net Pay: ₱%,.2f%n", CompleteMonthlyRate );
 
-                        return;
+                        RunFlag2 = false;
                     }
+
                     // else (if N) uses this flag
                     else if (PubSector == 'N') {
                         double SSSTax = 0.05;
@@ -185,10 +184,8 @@ public class NetPayMain {
                             IncomeTax = 200833.33 + (TaxedMonthlyRate - 666667) * 0.35;
                         }
 
-//                        System.out.print("Absence deduction (no. of days absent): ");
                         int AbsentInput = readNonNegativeInt(scanner, "Absence deduction (no. of days absent): ");
                         double AbsenceDeduction = DailyRate * AbsentInput;
-//                        System.out.print("Late deduction (no. of hours late): "); //follows the "no work, no pay" rule
                         int LateInput = readNonNegativeInt(scanner, "Late deduction (no. of hours late): ");
                         double LateDeduction = HourlyRate * LateInput;
 
@@ -214,7 +211,7 @@ public class NetPayMain {
                         System.out.println("\n—————————————————————————");
                         System.out.printf("Net pay: ₱%,.2f%n", CompleteMonthlyRate);
 
-                        return;
+                        RunFlag2 = false;
 
                     } else {
 
@@ -222,9 +219,16 @@ public class NetPayMain {
                         System.out.print("\n\n");
                         RunFlag2 = true;
                     }
-                    }
                 }
-                return;
+                }
+                // ask whether to process another employee
+                System.out.print("\n\nProcess another employee? (Y/N): ");
+                char ContinueInput = Character.toUpperCase(scanner.next().charAt(0));
+                scanner.nextLine(); // cleans leftover newline before next name prompt
+                if (ContinueInput != 'Y') {
+                    RunFlag = false;
+                    System.out.println("Program ended.");
+                }
             } else {
                 System.out.println("Enter a valid daily pay amount.");
                 System.out.print("\n\n");
