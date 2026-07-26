@@ -50,8 +50,6 @@ public class NetPayMain {
                     char PubSector = Character.toUpperCase(scanner.next().charAt(0));
                     if (PubSector == 'Y') {
                         double SSSTax = 0.05;
-//                        double PhilHealthTax = 0.025;
-//                        double PagibigTax = 0.02;
                         double GSISTax = 0.09; //needs to be optional
                         double deminimis = 0; //depends on the employer (hard code if needed)
 
@@ -112,8 +110,6 @@ public class NetPayMain {
 
                     else if (PubSector == 'N') {
                         double SSSTax = 0.05;
-//                        double PhilHealthTax = 0.025;
-//                        double PagibigTax = 0.02;
                         double deminimis = 0; //depends on the employer (hard code if needed)
 
                         double CompSSSTax = FinMonthlyRate * SSSTax;
@@ -187,15 +183,3 @@ public class NetPayMain {
         }
     }
 }
-
-
-
-
-//        while (Continue) {
-//            System.out.print("Enter gross pay amount: ");
-//            double PayPerMonth = scanner.nextDouble();
-//            if (PayPerMonth <= 0) {
-//
-//                System.out.println("please enter a valid gross pay amount.");
-//
-//            }
