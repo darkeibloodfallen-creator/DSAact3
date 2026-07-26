@@ -1,16 +1,55 @@
 import java.util.Scanner;
 import java.util.Locale; //library used for variables to recognize commas + comma input error
+import java.util.InputMismatchException;
 
 public class NetPayMain {
-    public static void main(String[] args) {
 
+    // error handling in order to prevent negatives and characters in fields only numbers should be in
+    private static double readPositiveDouble(Scanner scanner, String prompt) {
+    double value;
+    while (true) {
+            System.out.print(prompt);
+            try {value = scanner.nextDouble();
+            if (value < 0) {
+            System.out.println("Cannot be negative. Please try again.");
+            continue;
+
+                }
+            return value;
+            } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please try again.");
+            scanner.next();
+            }
+        }
+    }
+    private static int readNonNegativeInt(Scanner scanner, String prompt) {
+        int value;
+        while (true) {
+            System.out.print(prompt);
+            try {
+            value = scanner.nextInt();
+            if (value < 0) {
+            System.out.println("Cannot be negative. Please try again.");
+            continue;
+                }
+            return value;
+            } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a whole number.");
+            scanner.next();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
         boolean RunFlag = true;
 
         while (RunFlag) {
-            System.out.print("Enter daily daily rate: ₱");
-            double DailyRate = scanner.nextDouble();
+            System.out.print("Enter employee name: ");
+            String EmployeeName = scanner.nextLine();
+//            System.out.print("Enter daily rate: ₱");
+            double DailyRate = readPositiveDouble(scanner, "Enter daily rate: ₱");
             if (DailyRate > 0) {
 
                 double DailyComp = DailyRate * 261;
@@ -20,13 +59,12 @@ public class NetPayMain {
                 double RegOTMultiplier = 1.25;
                 double SpecOTMultiplier = 1.7;
 
-                boolean checkpoint1 = true;
-
-                while (checkpoint1) {
-                    System.out.print("Number of regular overtime hours: ");
-                    double RegOTHours = scanner.nextDouble();
-                    System.out.print("Number of holiday overtime hours (holidays): ");
-                    double SpecOTHours = scanner.nextDouble();
+                //regOT
+                {
+//                    System.out.print("Overtime (No. of overtime hours): ");
+                    double RegOTHours = readPositiveDouble(scanner, "Overtime (No. of overtime hours): ");
+//                    System.out.print("Holiday overtime (No. of holiday overtime hours): ");
+                    double SpecOTHours = readPositiveDouble(scanner, "Holiday overtime (No. of holiday overtime hours): ");
 
                     double CompRegOTHours = HourlyRate * RegOTMultiplier; //regular working day overtime
                     double CompSpecOTHours = HourlyRate * SpecOTMultiplier; //holiday or rest day overtime
@@ -46,7 +84,8 @@ public class NetPayMain {
                 boolean RunFlag2 = true;
 
                 while (RunFlag2) {
-                    System.out.print("Public Sector employee (Y/N) ?: ");
+                    // Public sector = Y, uses this flag
+                    System.out.print("Public Sector employee? (Y/N): ");
                     char PubSector = Character.toUpperCase(scanner.next().charAt(0));
                     if (PubSector == 'Y') {
                         double SSSTax = 0.05;
@@ -81,11 +120,11 @@ public class NetPayMain {
                             IncomeTax = 200833.33 + (TaxedMonthlyRate - 666667) * 0.35;
                         }
 
-                        System.out.print("Absence deduction (No. of days absent): ");
-                        int AbsentInput = scanner.nextInt();
+//                        System.out.print("Absence deduction (no. of days absent): ");
+                        int AbsentInput = readNonNegativeInt(scanner, "Absence deduction (no. of days absent): ");
                         double AbsenceDeduction = DailyRate * AbsentInput;
-                        System.out.print("Late deduction (No. of hours late): "); //follows the "no work, no pay" rule
-                        int LateInput = scanner.nextInt();
+//                        System.out.print("Late deduction (no. of hours late): "); //follows the "no work, no pay" rule
+                        int LateInput = readNonNegativeInt(scanner, "Late deduction (no. of hours late): ");
                         double LateDeduction = HourlyRate * LateInput;
 
                         double CompleteMonthlyRate = TaxedMonthlyRate - LateDeduction - AbsenceDeduction - IncomeTax;
@@ -93,21 +132,28 @@ public class NetPayMain {
                         System.out.print("\n\n");
 
 
-                        //payslip
-                        System.out.println("Gross Salary (Monthly): ₱" + MonthlyRate);
-                        System.out.println("Total overtime bonus: ₱" + TotalBonus );
-                        System.out.println("SSS tax (5%): ₱" + CompSSSTax );
-                        System.out.println("Phil Health tax (2.5%): ₱" + CompPhilTax );
-                        System.out.println("Pagibig tax (2%): ₱" + CompPagibigTax );
-                        System.out.println("GSIS tax (9%): ₱" + CompGSISTax );
-                        System.out.println("Income tax: ₱" + IncomeTax);
-                        System.out.println("Late deduction (Per Hour): ₱"  + LateDeduction );
-                        System.out.println("Absence deduction (Per Day): ₱" + AbsenceDeduction );
-                        System.out.println("Net Pay: ₱" + CompleteMonthlyRate );
+                        //payslip + PUBLIC SECTOR = Y
+                        System.out.println("TRIPLE T DEVELOPMENT COOPERATIVE");
+                        System.out.println("\t\t\tGanton");
+                        System.out.println("\nEmployee name: " + EmployeeName);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Gross Salary (monthly): ₱%,.2f%n", MonthlyRate);
+                        System.out.printf("Total overtime bonus: ₱%,.2f%n", TotalBonus );
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("SSS (5%%): ₱%,.2f%n", CompSSSTax );
+                        System.out.printf("PhilHealth (2.5%%): ₱%,.2f%n", CompPhilTax );
+                        System.out.printf("Pag-Ibig (2%%): ₱%,.2f%n", CompPagibigTax );
+                        System.out.printf("GSIS (9%%): ₱%.2f%n", CompGSISTax);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Income tax: ₱%,.2f%n", IncomeTax);
+                        System.out.printf("Absence deduction (per day): ₱%,.2f%n", AbsenceDeduction );
+                        System.out.printf("Late deduction (per hour): ₱%,.2f%n", LateDeduction );
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Net Pay: ₱%,.2f%n", CompleteMonthlyRate );
 
                         return;
                     }
-
+                    // else (if N) uses this flag
                     else if (PubSector == 'N') {
                         double SSSTax = 0.05;
                         double deminimis = 0; //depends on the employer (hard code if needed)
@@ -139,27 +185,34 @@ public class NetPayMain {
                             IncomeTax = 200833.33 + (TaxedMonthlyRate - 666667) * 0.35;
                         }
 
-                        System.out.print("Absence deduction (No. of days absent): ");
-                        int AbsentInput = scanner.nextInt();
+//                        System.out.print("Absence deduction (no. of days absent): ");
+                        int AbsentInput = readNonNegativeInt(scanner, "Absence deduction (no. of days absent): ");
                         double AbsenceDeduction = DailyRate * AbsentInput;
-                        System.out.print("Late deduction (No. of hours late): "); //follows the "no work, no pay" rule
-                        int LateInput = scanner.nextInt();
+//                        System.out.print("Late deduction (no. of hours late): "); //follows the "no work, no pay" rule
+                        int LateInput = readNonNegativeInt(scanner, "Late deduction (no. of hours late): ");
                         double LateDeduction = HourlyRate * LateInput;
 
                         double CompleteMonthlyRate = TaxedMonthlyRate - LateDeduction - AbsenceDeduction - IncomeTax;
 
                         System.out.print("\n\n");
 
-
-                        System.out.println("Gross Salary (Monthly): ₱" + MonthlyRate);
-                        System.out.println("Total overtime bonus: ₱" + TotalBonus );
-                        System.out.println("SSS tax (5%): ₱" + CompSSSTax );
-                        System.out.println("Phil Health tax (2.5%): ₱" + CompPhilTax );
-                        System.out.println("Pagibig tax (2%): ₱" + CompPagibigTax );
-                        System.out.println("Income tax: ₱" + IncomeTax);
-                        System.out.println("Late deduction (Per Hour): ₱"  + LateDeduction );
-                        System.out.println("Absence deduction (Per Day): ₱" + AbsenceDeduction );
-                        System.out.println("Net Pay: ₱" + CompleteMonthlyRate );
+                        //payslip + PUBLIC SECTOR = N
+                        System.out.println("TRIPLE T DEVELOPMENT COOPERATIVE");
+                        System.out.println("\t\t\tGanton");
+                        System.out.println("\nEmployee name: " + EmployeeName);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Gross Salary (monthly): ₱%,.2f%n", MonthlyRate);
+                        System.out.printf("Total overtime bonus: ₱%,.2f%n", TotalBonus);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("SSS (5%%): ₱%,.2f%n", CompSSSTax);
+                        System.out.printf("PhilHealth (2.5%%): ₱%,.2f%n", CompPhilTax);
+                        System.out.printf("Pag-Ibig (2%%): ₱%,.2f%n", CompPagibigTax);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Income tax: ₱%,.2f%n", IncomeTax);
+                        System.out.printf("Absence deduction (per day): ₱%,.2f%n", AbsenceDeduction);
+                        System.out.printf("Late deduction (per hour): ₱%,.2f%n", LateDeduction);
+                        System.out.println("\n—————————————————————————");
+                        System.out.printf("Net pay: ₱%,.2f%n", CompleteMonthlyRate);
 
                         return;
 
@@ -168,12 +221,9 @@ public class NetPayMain {
                         System.out.println("please enter Y or N");
                         System.out.print("\n\n");
                         RunFlag2 = true;
-
                     }
                     }
-
                 }
-
                 return;
             } else {
                 System.out.println("Enter a valid daily pay amount.");
